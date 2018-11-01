@@ -149,4 +149,7 @@ class MongoScheduler(Scheduler):
 
     def sync(self):
         for entry in self._schedule.values():
-            entry.save()
+            try:
+                entry.save()
+            except:
+                pass
