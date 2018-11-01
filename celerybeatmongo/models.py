@@ -1,4 +1,4 @@
-# Copyright 2018 Regents of the University of Michigan
+# Copyright 2013 Regents of the University of Michigan
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy
@@ -21,7 +21,7 @@ def get_periodic_task_collection():
 PERIODS = ('days', 'hours', 'minutes', 'seconds', 'microseconds')
 
 
-class PeriodicTask(DynamicDocument):
+class PeriodicTask(Document):
     """mongo database model that represents a periodic task"""
 
     meta = {'collection': get_periodic_task_collection(),
@@ -76,27 +76,22 @@ class PeriodicTask(DynamicDocument):
     interval = EmbeddedDocumentField(Interval)
     crontab = EmbeddedDocumentField(Crontab)
 
-    args = ListField()
+    args = ListField(StringField())
     kwargs = DictField()
 
     queue = StringField()
     exchange = StringField()
     routing_key = StringField()
-    soft_time_limit = IntField()
 
     expires = DateTimeField()
-    start_after = DateTimeField()
     enabled = BooleanField(default=False)
 
     last_run_at = DateTimeField()
 
-    total_run_count = IntField(min_value=0, default=0)
-    max_run_count = IntField(min_value=0, default=0)
+    total_run_count = IntField(min_value=0)
 
     date_changed = DateTimeField()
     description = StringField()
-
-    run_immediately = BooleanField()
 
     #objects = managers.PeriodicTaskManager()
     no_changes = False
@@ -118,7 +113,7 @@ class PeriodicTask(DynamicDocument):
         elif self.crontab:
             return self.crontab.schedule
         else:
-            raise Exception("must define interval or crontab schedule")
+            raise Exception("must define internal or crontab schedule")
 
     def __unicode__(self):
         fmt = '{0.name}: {{no schedule}}'
@@ -127,5 +122,5 @@ class PeriodicTask(DynamicDocument):
         elif self.crontab:
             fmt = '{0.name}: {0.crontab}'
         else:
-            raise Exception("must define interval or crontab schedule")
+            raise Exception("must define internal or crontab schedule")
         return fmt.format(self)

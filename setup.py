@@ -20,7 +20,8 @@ setup(
         'setuptools',
         'pymongo',
         'mongoengine',
-        'celery',
+        'celery==3.1.24',
+        'billiard'
     ]
 
 )
